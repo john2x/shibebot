@@ -74,7 +74,7 @@
         start (rand-int (count phrases))
         end (+ start n)
         phrases (set (interleave phrases fillers))
-        shibe (-> phrases vec
+        shibe (-> phrases shuffle vec
                   (subvec start (min end (count phrases))))]
     shibe))
 
