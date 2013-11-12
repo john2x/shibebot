@@ -7,6 +7,8 @@ Wow.
 
 ## Usage
 
+(Note/TODO: You'll need to [supply your own](https://github.com/john2x/shibebot/blob/master/src/shibebot/core.clj#L6) [Big Huge Thesaurus API key](http://words.bighugelabs.com/api.php)).
+
     => (use 'shibebot.core)
     => (shibify "so boring")
     "               very boring                               so ho-hum\n
