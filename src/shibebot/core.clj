@@ -60,7 +60,7 @@
     @fillers))
 
 (defn shibe-phrases [seed n]
-  "Return a collection of at most n shibe phrases (depends
+  "Return a coll of at most n shibe phrases (depends
   on the number of synonyms found for the seed text)
   based on seed text"
   (let [seeds (-> seed
@@ -78,8 +78,9 @@
                   (subvec start (min end (count phrases))))]
     shibe))
 
-(defn- random-spaces []
-  (string/join (repeat (+ 6 (rand-int 6)) " ")))
+(defn- random-spaces
+  ([] (random-spaces 6 12))
+  ([min max] (string/join (repeat (+ min (rand-int (- max min))) " "))))
 
 (defn- row->str [row]
   (reduce str "    " (map #(cond (nil? %) (random-spaces)
@@ -90,7 +91,8 @@
   (string/join "\n" (map row->str grid)))
 
 (defn render-shibe [phrases grid]
-  "Render a collection of shibe phrases onto a grid"
+  "Render a coll of shibe phrases onto a grid.
+  The grid must contain mappings to indices of the phrases coll"
   (let [rendered-grid (map (partial replace phrases) grid)
         text (grid->str rendered-grid)] 
     text))
