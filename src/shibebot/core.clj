@@ -27,6 +27,10 @@
           (zipmap (map re-pattern PREDICATES)
                   (map (constantly "") PREDICATES))))
 
+(defn- cleanup-seed-text [s]
+  (-> s remove-predicates
+      (string/replace #"[^a-zA-Z\s]" "")))
+
 (defn- get-synonyms
   ([words] (get-synonyms words 5))
   ([words limit]
@@ -64,7 +68,7 @@
   on the number of synonyms found for the seed text)
   based on seed text"
   (let [seeds (-> seed
-                  remove-predicates
+                  cleanup-seed-text
                   string/trim
                   (string/split #" ")
                   vec)
