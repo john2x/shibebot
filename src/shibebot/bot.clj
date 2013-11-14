@@ -8,6 +8,7 @@
 (def get-sentences (make-sentence-detector "opennlp_models/en-sent.bin"))
 
 (defonce ^:const USERNAME "shibebote")
+(defonce ^:const PASSWORD "xxx")
 
 (defn suitable-sentence? [sentence]
   (let [s (string/lower-case (string/replace sentence #"[^a-zA-Z\s]" ""))
@@ -37,14 +38,20 @@
   for a shibe reply. "
   (not-empty (extract-suitable-sentences (:body comm))))
 
+(defn- post-shibe-reply [comm]
+  (let [shibe (-> comm :body extract-suitable-sentences first shibify)]
+    (println shibe)
+    (println (reddit/reply comm shibe))))
+
 (defn run-bot []
+  "Run shibe bot. Poll for new comments, and if they are suitable, post a
+  shibe reply"
   (reddit/login! USERNAME PASSWORD)
   (reddit/set-user-agent! "john2x/shibebot")
   (let [comments #(str % "comments/")]  ;; this should have been in reddit ns
     (->> "all" reddit/subreddit comments reddit/new-items
          (filter #(suitable-comment? %))
-         (map #(-> % :body extract-suitable-sentences first shibify))
-         (map println)
+         (map post-shibe-reply)
          dorun)))
 
 ;; (run-bot)
