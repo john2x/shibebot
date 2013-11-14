@@ -14,7 +14,7 @@
    [nil nil   4 nil nil   8]])
 
 (def ^:const FILLERS
-  ["wow" "shibe" "doge" "bot" "randum" "random" "synonym"])
+  ["wow" "shibe" "doge" "bot" "randum" "random" "synonym" "words" "thesaurus"])
 
 (def ^:const PREDICATES
   ["such" "so" "much" "very" "much" "very" "so"])
