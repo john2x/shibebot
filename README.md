@@ -22,6 +22,8 @@ wow
                    very bot                        \n
                          much doge             "
 
+See [/u/shibebote](http://reddit.com/user/shibebote) for more wow.
+
 ## License
 
 Copyright © 2013 John Louis Del Rosario
