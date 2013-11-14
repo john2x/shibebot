@@ -1,6 +1,7 @@
 (ns shibebot.core
   (:require [clojure.string :as string]
-            [clojure.data.json :as json]))
+            [clojure.data.json :as json])
+  (:import [java.io FileNotFoundException]))
 
 ;; API key generated from http://words.bighugelabs.com/api.php
 (defonce ^:const BHT-API "http://words.bighugelabs.com/api/2/your-api-key/%s/json")
@@ -13,7 +14,7 @@
    [nil nil   4 nil nil   8]])
 
 (def ^:const FILLERS
-  ["wow" "shibe" "doge" "bot", "randum" "bote"])
+  ["wow" "shibe" "doge" "bot" "randum" "bote" "synonym"])
 
 (def ^:const PREDICATES
   ["such" "so" "much" "very" "much" "very" "so"])
@@ -23,7 +24,7 @@
 
 (defn- remove-predicates [s]
   (reduce #(string/replace %1 (first %2) (second %2))
-          s
+          (string/lower-case s)
           (zipmap (map re-pattern PREDICATES)
                   (map (constantly "") PREDICATES))))
 
@@ -31,17 +32,25 @@
   (-> s remove-predicates
       (string/replace #"[^a-zA-Z\s]" "")))
 
+(defn- fetch-bht [word]
+  (try
+    (json/read-str (slurp (format BHT-API word)) :key-fn keyword)
+    (catch FileNotFoundException e nil)))
+
 (defn- get-synonyms
   ([words] (get-synonyms words 5))
   ([words limit]
-    (let [word-syns (atom {})]
-      (swap! word-syns into (concat
-        (for [word words
-              :let [resp (-> (slurp (format BHT-API word))
-                             (json/read-str :key-fn keyword))
-                    syns (subvec (:syn (first (vals resp))) 0 limit)]]
-          [word (cons word syns)])))
-      @word-syns)))
+   (let [resps (map fetch-bht words)
+         syns  (->> resps
+                    (map #(or (:adjective %)
+                              (:noun %)
+                              (:verb %)))
+                    (map #(or (:syn %)
+                              (:sim %)))
+                    (map #(if (empty? %) []
+                            (subvec % 0 (min limit (count %))))))
+         words-syns (reduce into words syns)]
+     words-syns)))
 
 (defn- random-phrases [words]
   (let [phrases (atom [])]
@@ -72,7 +81,7 @@
                   string/trim
                   (string/split #" ")
                   vec)
-        syns (reduce into (vals (get-synonyms seeds)))
+        syns (get-synonyms seeds)
         phrases (random-phrases syns)
         fillers (random-fillers (count phrases))
         start (rand-int (count phrases))
@@ -103,5 +112,6 @@
 
 (defn shibify [seed-text]
   "Generate shibe text from seed-text"
+  (println (str "Generating shibe from \"" seed-text "\"..."))
   (render-shibe (shibe-phrases seed-text 10) TEMPLATE))
 
