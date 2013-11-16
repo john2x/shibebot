@@ -22,7 +22,9 @@ wow
                    very bot                        \n
                          much doge             "
 
-See [/u/shibebote](http://reddit.com/user/shibebote) for more wow.
+See [/u/shibebote](http://reddit.com/user/shibebote)† for more wow.
+
+† Bot deactivated indefinitely. Getting too many downvotes/getting banned too fast. :(
 
 ## License
 
